@@ -1,0 +1,40 @@
+CREATE TABLE IF NOT EXISTS users(
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS roles(
+    id SMALLSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS user_roles(
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+CREATE TABLE IF NOT EXISTS menus(
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    parent_id BIGINT NULL,
+    level INT DEFAULT 0,
+    FOREIGN KEY (parent_id) REFERENCES menus(id)
+);
+
+CREATE TABLE IF NOT EXISTS role_menu_access(
+    id BIGSERIAL PRIMARY KEY,
+    role_id BIGINT NOT NULL,
+    menu_id BIGINT NOT NULL,
+    can_create BOOLEAN DEFAULT FALSE,
+    can_read BOOLEAN DEFAULT TRUE,
+    can_update BOOLEAN DEFAULT FALSE,
+    can_delete BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (role_id) REFERENCES roles(id),
+    FOREIGN KEY (menu_id) REFERENCES menus(id)
+);
