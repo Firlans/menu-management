@@ -19,7 +19,7 @@ Dibangun dengan **Node.js (Express)** dan **PostgreSQL** serta menggunakan **JWT
 
 1. **Clone repository**
    ```bash
-    git clone https://your-repo-link.git
+    git clone https://github.com/Firlans/menu-management.git
     cd menu-management
 
 2. **Install dependencies**
