@@ -37,19 +37,19 @@ import {
 
 export const getDashboard = async (req, res) => {
   try {
-    const userId = req.user.id; // dari middleware auth jwt
+    const userId = req.user.id; 
+    if (!userId) return res.status(401).json(error("Unauthorized"));
+
+    const roleId = req.body.role_id; // ambil dari query atau body
+    if (!roleId) return res.status(400).json(error("role_id wajib dipilih"));
+
     // Ambil semua role user
     const roles = await getUserRole(userId);
-    if (!roles.length) {
-      return res.status(403).json(error("User tidak punya role"));
-    }
-    // Untuk sederhana: ambil role pertama (kalau multi-role bisa digabung unique menu)
-    const role = roles[0];
+    const role = roles.find(r => r.id === parseInt(roleId));
+    if (!role) return res.status(403).json(error("User tidak punya role dengan id tersebut"));
 
     // Ambil menu berdasarkan role
     const menus = await getMenusByRole(role.id);
-
-    // Susun jadi tree
     const menuTree = buildMenuTree(menus);
 
     return res.json(success({ role, menus: menuTree }, "get"));
