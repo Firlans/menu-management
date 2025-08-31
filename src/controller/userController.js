@@ -7,11 +7,12 @@ import {
 } from "../models/userModel.js";
 
 import { success, error, invalidParameter } from "../utils/response.js";
+import { assignRoleToUser } from "../models/userRoleModel.js";
 import { getToken } from "../config/jwt.js";
 
 export const createUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, role_ids } = req.body;
 
         if (!username || !email || !password) {
             return res.status(400).json(invalidParameter("Username, email, dan password wajib diisi"));
@@ -24,9 +25,19 @@ export const createUser = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // buat user
         const user = await createUserModel(username, email, hashedPassword);
 
-        return res.status(201).json(success(user, "post"));
+        // assign role jika ada role_ids
+        let assignedRoles = [];
+        if (Array.isArray(role_ids) && role_ids.length > 0) {
+            for (const role_id of role_ids) {
+                const roleAssigned = await assignRoleToUser(user.id, role_id);
+                assignedRoles.push(roleAssigned);
+            }
+        }
+
+        return res.status(201).json(success({ user, roles: assignedRoles }, "post"));
     } catch (err) {
         console.error("Error creating user:", err.message);
         return res.status(500).json(error("Terjadi kesalahan server"));
@@ -51,7 +62,6 @@ export const login = async (req, res) => {
             return res.status(401).json(error("Email atau password salah", 401));
         }
 
-        // 🔑 generate token dari helper
         const token = getToken({ id: user.id, email: user.email });
 
         return res.status(200).json(success({

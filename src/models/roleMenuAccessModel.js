@@ -60,3 +60,13 @@ export const revokeMenuAccess = async (role_id, menu_id) => {
 
     return result.rows[0];
 };
+
+export const assignMenuAccess = async (role_id, menu_id, can_create, can_read, can_update, can_delete) => {
+  const result = await pool.query(
+    `INSERT INTO role_menu_access (role_id, menu_id, can_create, can_read, can_update, can_delete)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING *`,
+    [role_id, menu_id, can_create, can_read, can_update, can_delete]
+  );
+  return result.rows[0];
+};

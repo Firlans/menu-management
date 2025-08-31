@@ -39,6 +39,19 @@ export const updateMenu = async (id, { name, code, parent_id, level }) => {
   return result.rows[0];
 };
 
+
+export const getMenusByRole = async (role_id) => {
+  const result = await pool.query(
+    `SELECT m.*, rma.can_create, rma.can_read, rma.can_update, rma.can_delete
+     FROM role_menu_access rma
+     JOIN menus m ON m.id = rma.menu_id
+     WHERE rma.role_id = $1
+     ORDER BY m.parent_id NULLS FIRST, m.id ASC`,
+    [role_id]
+  );
+  return result.rows;
+};
+
 export const deleteMenu = async (id) => {
   const result = await pool.query(
     "DELETE FROM menus WHERE id = $1 RETURNING id, name, code",

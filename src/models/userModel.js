@@ -5,7 +5,7 @@ export const getUserByEmail = async (email) => {
     "SELECT * FROM users WHERE email = $1 LIMIT 1",
     [email]
   );
-  return result.rows[0]; // return single user
+  return result.rows[0]; 
 };
 
 export const createUser = async (username, email, hashedPassword) => {
@@ -30,10 +30,21 @@ export const updateUser = async (id, { username, email, password }) => {
   return result.rows[0];
 };
 
+export const getUserRole = async (user_id) => {
+  const result = await pool.query(
+    `SELECT r.*
+     FROM user_roles ur
+     JOIN roles r ON ur.role_id = r.id
+     WHERE ur.user_id = $1`,
+    [user_id]
+  );
+  return result.rows;
+};
+
 export const deleteUser = async (id) => {
   const result = await pool.query(
     "DELETE FROM users WHERE id = $1 RETURNING id, username, email",
     [id]
   );
-  return result.rows[0]; // return deleted user info
+  return result.rows[0]; 
 };

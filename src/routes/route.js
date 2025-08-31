@@ -8,7 +8,7 @@ import {
 import {
   getAllMenus,
   getMenu,
-  createMenu,
+  createMenus,
   updateMenu,
   deleteMenu,
   getAllRoles,
@@ -25,6 +25,7 @@ import {
   getRoleMenuAccess,
   updateRoleMenuAccess,
   deleteRoleMenuAccess,
+  getDashboard
 } from "../controller/appController.js";
 
 const router = express.Router();
@@ -37,12 +38,12 @@ router.post("/user", createUser);
 router.post("/login", login);
 router.put("/user/:id", authMiddleware, updateUser); // proteksi route
 router.delete("/user/:id", authMiddleware, deleteUser);
-// router.get("/dashboard", login);
+router.get("/dashboard", authMiddleware, getDashboard);
 // router.post("/logout", login);
 
 router.get("/menu", getAllMenus);
 router.get("/menu/:id", getMenu);
-router.post("/menu", createMenu);
+router.post("/menu", createMenus);
 router.put("/menu/:id", updateMenu);
 router.delete("/menu/:id", deleteMenu);
 
