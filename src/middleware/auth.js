@@ -1,34 +1,19 @@
-require("dotenv").config();
+import { verifyToken } from "../config/jwt.js";
+import { error } from "../utils/response.js";
 
-const jwt = require("jsonwebtoken");
-
-// authorization
-const authorization = (req, res, next) => {
-  const authHeader = req.header("Authorization");
-  if (!authHeader) {
-    return res.status(401).json({ message: "Authorization header missing" });
-  }
-
-  const token = authHeader.split(" ")[1];
+export const authMiddleware = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ message: "Token missing" });
+    return res.status(401).json(error("Token tidak ditemukan", 401));
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded) {
-      return res.status(403).json({
-        status: 403,
-        success: false,
-        message: "Invalid or expired token"
-      });
-    }
-    req.user = decoded;
-    next();
-  } catch (err) {
-    res.status(401).json({ message: "Token is not valid" });
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    return res.status(401).json(error("Token tidak valid atau expired", 401));
   }
+
+  req.user = decoded;
+  next();
 };
-
-module.exports = authorization;

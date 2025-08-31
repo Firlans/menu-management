@@ -1,4 +1,4 @@
-const success = (data, method) => {
+export const success = (data, method) => {
     return {
         status: method.toLowerCase() === "get" ? 200 : 201,
         success: true,
@@ -9,7 +9,7 @@ const success = (data, method) => {
         data,
     };
 };
-const error = (message = 'Something went wrong', status = 500) => {
+export const error = (message = 'Something went wrong', status = 500) => {
     return {
         status,
         success: false,
@@ -17,7 +17,10 @@ const error = (message = 'Something went wrong', status = 500) => {
     };
 };
 
-export default {
-    success,
-    error
+export const invalidParameter = (message = "Invalid parameter") => {
+    return {
+        status: 400,
+        success: false,
+        message,
+    };
 };
